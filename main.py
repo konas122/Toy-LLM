@@ -5,10 +5,6 @@ from gpt2.gpt_model import GPTModel
 from dataset import create_dataloader
 
 
-if torch.cuda.is_available():
-    torch.set_default_device("cuda")
-
-
 """
 GPT2-small (the 124M configuration we already implemented):
     "emb_dim" = 768
@@ -71,12 +67,14 @@ val_loader = create_dataloader(
 )
 
 model = GPTModel(GPT_CONFIG_124M)
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 optimizer = torch.optim.AdamW(model.parameters(), lr=0.0004, weight_decay=0.1)
 tokenizer = tiktoken.get_encoding("gpt2")
 
 num_epochs = 10
+model.to(device)
 train_losses, val_losses, tokens_seen = train_model(
-    model, train_loader, val_loader, optimizer,
+    model, train_loader, val_loader, optimizer, device,
     num_epochs=num_epochs, eval_freq=5, eval_iter=5,
     start_context="Every effort moves you", tokenizer=tokenizer
 )
