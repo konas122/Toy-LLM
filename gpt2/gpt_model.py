@@ -12,7 +12,7 @@ class GPTModel(nn.Module):
         self.pos_emb = nn.Embedding(cfg["context_length"], cfg["emb_dim"])
         self.drop_emb = nn.Dropout(cfg["drop_rate"])
 
-        self.trf_blocks = nn.Sequential(
+        self.trf_blocks: list[TransformerBlock] = nn.Sequential(
             *[TransformerBlock(cfg) for _ in range(cfg["n_layers"])]
         )
 
