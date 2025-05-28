@@ -22,11 +22,14 @@ NEW_CONFIG.update(model_configs[model_name])
 
 model = GPTModel(NEW_CONFIG)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-optimizer = torch.optim.AdamW(model.parameters(), lr=0.00005, weight_decay=0.1)
-tokenizer = tiktoken.get_encoding("gpt2")
-
 settings, params = download_and_load_gpt2(model_size=NEW_CONFIG["model_size"], models_dir="draft/gpt2")
 load_weights(model, params)
+
+num_epochs = 2
+model.to(device)
+
+optimizer = torch.optim.AdamW(model.parameters(), lr=0.00005, weight_decay=0.1)
+tokenizer = tiktoken.get_encoding("gpt2")
 
 customized_collate_fn = partial(
     custom_collate_fn,
@@ -77,9 +80,6 @@ test_loader = DataLoader(
     num_workers=num_workers
 )
 
-
-num_epochs = 2
-model.to(device)
 train_losses, val_losses, tokens_seen = train_model(
     model, train_loader, val_loader, optimizer, device,
     num_epochs=num_epochs, eval_freq=5, eval_iter=5,
