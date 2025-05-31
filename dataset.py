@@ -38,6 +38,68 @@ def create_dataloader(txt, batch_size, max_length, stride,
 
 
 """
+the-verdict Dataset
+"""
+
+def prepare_verdict(file_path="data/the-verdict.txt"):
+    assert os.path.exists(file_path), "`the-verdict.txt` Not Found!"
+    with open(file_path, "r", encoding="utf-8") as file:
+        text_data = file.read()
+    return text_data
+
+
+"""
+tinyshakespeare Dataset
+"""
+
+def prepare_tinyshakespeare(file_name='tinyshakespeare.txt'):
+    cache_dir = 'data/'
+    url = 'https://raw.githubusercontent.com/karpathy/char-rnn/master/data/tinyshakespeare/input.txt'
+
+    def show_progress(block_num, block_size, total_size):
+        bar_template = "\r[{}] {:.2f}%"
+
+        downloaded = block_num * block_size
+        p = downloaded / total_size * 100
+        i = int(downloaded / total_size * 30)
+        if p >= 100.0:
+            p = 100.0
+        if i >= 30:
+            i = 30
+        bar = "=" * i + "." * (30 - i)
+        print(bar_template.format(bar, p), end='')
+
+    def get_file(url, file_name=None):
+        if file_name is None:
+            file_name = url[url.rfind('/') + 1:]
+        file_path = os.path.join(cache_dir, file_name)
+
+        if not os.path.exists(cache_dir):
+            os.mkdir(cache_dir)
+
+        if os.path.exists(file_path):
+            return file_path
+
+        print("Downloading: " + file_name)
+        try:
+            urllib.request.urlretrieve(url, file_path, show_progress)
+        except (Exception, KeyboardInterrupt) as e:
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            raise e
+
+        print(" Done")
+
+        return file_path
+
+    file_path = get_file(url, file_name)
+    with open(file_path, "r", encoding="utf-8") as file:
+        text_data = file.read()
+
+    return text_data, file_path
+
+
+"""
 sms+spam Dataset
 """
 
