@@ -121,7 +121,7 @@ def load_gpt2_params_from_tf_ckpt(ckpt_path, settings):
     return params
 
 
-def assign(left, right):
+def assign(left: torch.Tensor, right: tf.Tensor):
     if left.shape != right.shape:
         raise ValueError(f"Shape mismatch. Left: {left.shape}, Right: {right.shape}")
     return torch.nn.Parameter(torch.tensor(right))
